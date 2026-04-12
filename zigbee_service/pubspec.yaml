@@ -1,0 +1,46 @@
+name: zigbee_service
+description: A server app using the shelf package and Docker.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  args: ^2.4.0
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+
+  devices: any
+  events: any
+  common: any
+
+  zigbee_devices:
+    path: packages/zigbee_devices
+
+  dio: ^5.8.0+1
+  mqtt_client: ^10.0.0
+
+dependency_overrides:
+  devices:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: devices
+      ref: v1.5.1
+
+  common:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: common
+      ref: v1.5.1
+
+  events:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: events
+      ref: v1.5.1
+
+dev_dependencies:
+  http: ^1.1.0
+  lints: ^4.0.0
+  test: ^1.24.0

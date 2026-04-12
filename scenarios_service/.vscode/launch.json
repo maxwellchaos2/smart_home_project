@@ -1,0 +1,19 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "server",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/server.dart",
+            "toolArgs": [
+                "--define=ENV=dev",
+                "--define=SYNC_SERVICE_URL=http://0.0.0.0:8082",
+                "--define=DEBUG=true"
+            ]
+        }
+    ]
+}

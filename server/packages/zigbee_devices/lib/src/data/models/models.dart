@@ -1,0 +1,1 @@
+export 'zigbee_device_model.dart';

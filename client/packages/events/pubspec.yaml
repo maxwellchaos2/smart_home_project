@@ -1,0 +1,42 @@
+name: events
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  common:
+    path: ../common
+
+  devices:
+    path: ../devices
+
+  rooms:
+    path: ../rooms
+
+  web_socket_channel: ^3.0.1
+
+  auth_token:
+    path: ../auth_token
+
+  zigbee_devices:
+    path: ../zigbee_devices
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any
+  auto_route_generator: any

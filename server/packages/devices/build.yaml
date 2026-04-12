@@ -1,0 +1,22 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        options:
+          union_value_case: snake
+          copy_with: false
+          equal: true
+          from_json: false
+          to_json: false
+          when:
+            when: false
+            when_or_null: false
+            maybe_when: false
+      json_serializable:
+        options:
+          explicit_to_json: true
+          field_rename: snake
+
+        generate_for:
+          - "**/models/**.dart"
+          - "**/entities/*.dart"

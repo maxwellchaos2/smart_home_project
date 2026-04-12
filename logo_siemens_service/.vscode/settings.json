@@ -1,0 +1,52 @@
+{
+  "files.exclude": {
+    "**/*.mocks.dart": true,
+    "**/*.dart_tool": true,
+    "**/*.metadata": true,
+    "**/*.iml": true,
+    "**/*.idea": true,
+    "**/*/Runner.xcworkspace": true,
+    "**/*/Runner.xcodeproj": true,
+    "**/Pods": true,
+    "postgres-data": true,
+  },
+  "search.exclude": {
+    "**/.fvm": true,
+    ".dart_tool": true,
+    "coverage": true,
+    "build": true,
+    "**/*.svg": true
+  },
+  "files.watcherExclude": {
+    "**/.fvm": true,
+    ".dart_tool": true,
+    "coverage": true,
+    "build": true
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "pubspec.yaml": ".flutter-plugins, .packages, .dart_tool, .flutter-plugins-dependencies, .metadata, .packages, pubspec.lock, build.yaml, analysis_options.yaml, all_lint_rules.yaml, dart*.yaml, flutter*.yaml, icons_launcher.yaml",
+    ".gitignore": ".gitattributes, .gitmodules, .gitmessage, .mailmap, .git-blame*",
+    "readme.*": "authors, backers.md, changelog*, citation*, code_of_conduct.md, codeowners, contributing.md, contributors, copying, credits, governance.md, history.md, license*, maintainers, readme*, security.md, sponsors.md",
+    "*.dart": "$(capture).g.dart, $(capture).freezed.dart, $(capture).config.dart, $(capture).gr.dart",
+    "mason.yaml": "mason-lock.json",
+    "Podfile": "Podfile.lock"
+  },
+  "makefile.makefilePath": "Makefile",
+  "highlight.regexes": {
+    "(//TODO)(:)": {
+      "decorations": [
+        {
+          "fontWeight": "bold"
+        }
+      ]
+    }
+  },
+  "editor.inlineSuggest.showToolbar": "onHover",
+  "yaml.schemas": {
+    "https://spec.openapis.org/oas/3.0/schema/2021-09-28": "file:///Users/vzotov/FlutterProjects/smart_home/server/assets/openapi.yaml"
+  },
+  "dart.sdkPath": "/Users/vzotov/flutter/bin/cache/dart-sdk",
+  "dart.checkForSdkUpdates": true
+}

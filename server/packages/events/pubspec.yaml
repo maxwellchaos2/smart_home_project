@@ -1,0 +1,48 @@
+name: events
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  freezed_annotation: any
+  json_annotation: any
+
+  shelf: any
+  shelf_router: any
+
+  common:
+    path: ../common
+
+  database:
+    path: ../database
+
+  users:
+    path: ../users
+
+  rooms:
+    path: ../rooms
+
+  devices:
+    path: ../devices
+
+  web_socket_core:
+    path: ../web_socket_core
+
+  yandex_auth:
+    path: ../yandex_auth
+
+  yandex_devices:
+    path: ../yandex_devices
+
+  zigbee_devices:
+    path: ../zigbee_devices
+
+  yandex_dialogs:
+    path: ../yandex_dialogs
+
+dev_dependencies:
+  lints: ^5.0.0
+  build_runner: any
+  json_serializable: any
+  freezed: any

@@ -1,0 +1,28 @@
+name: events
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  common:
+    path: ../common
+
+  devices_entities:
+    path: ../devices_entities
+
+  rooms_entities:
+    path: ../rooms_entities
+
+  web_socket_channel: ^3.0.1
+
+dev_dependencies:
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any

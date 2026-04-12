@@ -1,0 +1,34 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "server",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/server.dart",
+            "toolArgs": [
+                "--define=ENV=dev",
+                "--define=SYNC_SERVICE_URL=http://0.0.0.0:8082",
+                "--define=ZIGBEE_BROKER=192.168.0.82",
+                "--define=ZIGBEE_PORT=1883",
+                "--define=DEBUG=true"
+            ]
+        },
+        {
+            "name": "server office",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/server.dart",
+            "toolArgs": [
+                "--define=ENV=dev",
+                "--define=SYNC_SERVICE_URL=http://0.0.0.0:8082",
+                "--define=HIKVISION_IP=192.168.0.225",
+                "--define=HIKVISION_USER=admin",
+                "--define=HIKVISION_PASSWORD=565758Ss",
+            ]
+        }
+    ]
+}

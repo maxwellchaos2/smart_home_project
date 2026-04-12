@@ -1,0 +1,81 @@
+name: devices
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  common:
+    path: ../common
+
+  sleek_circular_slider:
+    path: ../sleek_circular_slider
+
+  events:
+    path: ../events
+
+  rooms:
+    path: ../rooms
+
+  floors:
+    path: ../floors
+
+  flutter_staggered_grid_view: ^0.7.0
+
+  auth_token:
+    path: ../auth_token
+
+  app_info:
+    path: ../app_info
+
+  yandex_auth:
+    path: ../yandex_auth
+
+  users:
+    path: ../users
+
+  projects:
+    path: ../projects
+
+  device_positions:
+    path: ../device_positions
+
+  device_scenarios:
+    path: ../device_scenarios
+
+  inout_scenarios:
+    path: ../inout_scenarios
+
+  hikvision_isapi:
+    path: ../hikvision_isapi
+
+  flutter_svg: ^2.2.0
+  media_kit: ^1.2.3
+  media_kit_video: ^2.0.1
+  media_kit_libs_video: ^1.0.7
+  table_calendar: ^3.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any
+  auto_route_generator: any
+
+dependency_overrides:
+  web: ^0.4.0
+  js: ^0.7.0
+  package_info_plus: ^6.0.0
+  wakelock_plus: ^1.1.5

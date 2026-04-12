@@ -1,0 +1,28 @@
+name: refresh_token
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  freezed_annotation: any
+  json_annotation: any
+
+  shelf: any
+  shelf_router: any
+
+  dart_jsonwebtoken: ^2.0.0
+
+  common:
+    path: ../common
+
+  database:
+    path: ../database
+
+  uuid: ^4.5.1
+
+dev_dependencies:
+  lints: ^5.0.0
+  build_runner: any
+  json_serializable: any
+  freezed: any

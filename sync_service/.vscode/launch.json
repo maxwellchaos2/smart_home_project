@@ -1,0 +1,50 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Отладчик Python: Текущий файл",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/.venv/bin/python"
+        },
+        {
+            "name": "BLE Gateway",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/ble_gateway.py",
+            "console": "integratedTerminal",
+            "python": "${workspaceFolder}/.venv/bin/python",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "server debug",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/server.dart",
+            "toolArgs": [
+                "--define=ENV=dev",
+                "--define=REMOTE_SERVER_URL=http://localhost:8080",
+                "--define=PORTT=8082",
+                "--define=CONFIG_DATA_PATH=./config_data"
+            ]
+        },
+        {
+            "name": "server",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/server.dart",
+            "toolArgs": [
+                "--define=ENV=dev",
+                "--define=REMOTE_SERVER_URL=https://api.smart-home-pnz.ru",
+                "--define=DEBUG=true",
+                "--define=PORTT=8082",
+                "--define=CONFIG_DATA_PATH=./config_data"
+            ]
+        }
+    ]
+}

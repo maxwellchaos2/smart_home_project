@@ -1,0 +1,42 @@
+# Docker files
+.dockerignore
+Dockerfile
+
+# Dart/Flutter
+build/
+.dart_tool/
+.packages
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+env/
+.env/
+
+# IDE
+.vscode/
+.idea/
+
+# Git
+.git/
+.github/
+.gitignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Documentation
+README.md
+CHANGELOG.md
+
+# Config files that shouldn't be in container
+config.json

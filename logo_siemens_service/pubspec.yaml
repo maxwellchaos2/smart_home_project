@@ -1,0 +1,51 @@
+name: logo_siemens_service
+description: A server app using the shelf package and Docker.
+version: 1.0.0
+publish_to: none
+
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  args: ^2.4.0
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+
+  dio: ^5.8.0+1
+  synchronized: ^3.0.0
+  mqtt_client: ^10.11.1
+
+  devices: any
+  events: any
+  common: any
+
+  inout_scenarios:
+    path: packages/inout_scenarios
+
+dependency_overrides:
+  devices:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: devices
+      ref: v1.5.0
+
+  common:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: common
+      ref: v1.5.0
+
+  events:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: events
+      ref: v1.5.0
+
+dev_dependencies:
+  http: ^1.1.0
+  lints: ^4.0.0
+  test: ^1.24.0
+  build_runner: any
+  freezed: any

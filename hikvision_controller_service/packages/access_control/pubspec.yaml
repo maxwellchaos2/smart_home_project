@@ -1,0 +1,22 @@
+name: access_control
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  freezed_annotation: any
+  json_annotation: any
+
+  common:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: common
+
+  isapi:
+    path: ../isapi
+
+dev_dependencies:
+  build_runner: any
+  json_serializable: any
+  freezed: any

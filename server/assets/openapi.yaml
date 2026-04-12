@@ -1,0 +1,1802 @@
+openapi: 3.0.3
+info:
+  title: Smart Home Server API
+  version: 1.0.0
+  description: Актуальная спецификация server API (HTTP + WebSocket upgrade endpoint).
+
+servers:
+  - url: /
+    description: Relative server root
+
+tags:
+  - name: system
+  - name: auth
+  - name: oauth
+  - name: users
+  - name: projects
+  - name: rooms
+  - name: floors
+  - name: devices
+  - name: device-positions
+  - name: device-scenarios
+  - name: inout-scenarios
+  - name: yandex-auth
+  - name: yandex-devices
+  - name: yandex-dialogs
+  - name: email-verification
+  - name: websocket
+
+security:
+  - bearerAuth: []
+
+paths:
+  /:
+    get:
+      tags: [system]
+      summary: Health-like root endpoint
+      operationId: rootHandler
+      responses:
+        "200":
+          description: Plain text response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Hello, World!\n"
+
+  /echo/{message}:
+    get:
+      tags: [system]
+      summary: Echo message
+      operationId: echoHandler
+      parameters:
+        - in: path
+          name: message
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Echo response
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/swagger:
+    get:
+      tags: [system]
+      summary: Swagger UI page
+      operationId: swaggerPage
+      security: []
+      responses:
+        "200":
+          description: Swagger HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /api/tokens/login:
+    post:
+      tags: [auth]
+      summary: User login
+      operationId: login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Access and refresh token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPairResponse"
+        "403":
+          description: Invalid credentials
+
+  /api/tokens/refresh:
+    post:
+      tags: [auth]
+      summary: Refresh access token
+      operationId: refreshToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RefreshTokenRequest"
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required: [refresh_token]
+      responses:
+        "200":
+          description: New access token pair and oauth-compatible fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RefreshTokenResponse"
+
+  /api/tokens/revoke:
+    post:
+      tags: [auth]
+      summary: Revoke refresh token
+      operationId: revokeToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RevokeTokenRequest"
+      responses:
+        "200":
+          description: Revoked
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Token revoked
+
+  /api/tokens/login-device:
+    post:
+      tags: [auth]
+      summary: Device login by id
+      operationId: loginDevice
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginDeviceRequest"
+      responses:
+        "200":
+          description: Device token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenPairResponse"
+        "403":
+          description: Invalid device
+
+  /oauth/login:
+    get:
+      tags: [oauth]
+      summary: OAuth login page
+      operationId: oauthLoginPage
+      security: []
+      parameters:
+        - in: query
+          name: state
+          schema: { type: string }
+        - in: query
+          name: redirect_uri
+          schema: { type: string }
+        - in: query
+          name: client_id
+          schema: { type: string }
+        - in: query
+          name: response_type
+          schema: { type: string }
+      responses:
+        "200":
+          description: Login HTML
+          content:
+            text/html:
+              schema:
+                type: string
+        "400":
+          description: Invalid oauth query
+
+  /oauth/login/submit:
+    post:
+      tags: [oauth]
+      summary: OAuth login submit
+      operationId: oauthLoginSubmit
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                username: { type: string }
+                password: { type: string }
+                state: { type: string }
+                scope: { type: string }
+                redirect_uri: { type: string }
+                client_id: { type: string }
+              required: [username, password, state, redirect_uri, client_id]
+      responses:
+        "302":
+          description: Redirect to OAuth callback
+        "400":
+          description: Invalid credentials/form
+
+  /oauth/token:
+    post:
+      tags: [oauth]
+      summary: OAuth token exchange
+      operationId: oauthToken
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code: { type: string }
+                client_id: { type: string }
+                client_secret: { type: string }
+                grant_type: { type: string }
+              required: [code, client_id, client_secret, grant_type]
+      responses:
+        "200":
+          description: OAuth token response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OAuthTokenResponse"
+        "400":
+          description: Invalid grant/client/code
+
+  /api/users/me:
+    get:
+      tags: [users]
+      summary: Current user profile
+      operationId: userMe
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+
+  /api/users/create:
+    post:
+      tags: [users]
+      summary: Create user
+      operationId: createUser
+      parameters:
+        - in: query
+          name: tempToken
+          schema:
+            type: string
+          required: false
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "200":
+          description: Created user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+        "403":
+          description: Forbidden by role or temp token policy
+
+  /api/projects:
+    get:
+      tags: [projects]
+      summary: Fetch my projects
+      operationId: fetchMyProjects
+      responses:
+        "200":
+          description: Project list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProjectResponse"
+
+  /api/projects/create:
+    post:
+      tags: [projects]
+      summary: Create project
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProjectRequest"
+      responses:
+        "200":
+          description: Created project
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectResponse"
+
+  /api/projects/{projectId}/rooms:
+    get:
+      tags: [rooms]
+      summary: Fetch rooms by project
+      operationId: fetchRooms
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Room list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoomResponse"
+
+  /api/projects/{projectId}/rooms/create:
+    post:
+      tags: [rooms]
+      summary: Create room
+      operationId: createRoom
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/RoomInputRequest"
+                - type: object
+                  properties:
+                    plan_media_path:
+                      type: string
+                      nullable: true
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: JSON string of RoomInputRequest
+                planFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Created room
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomResponse"
+
+  /api/projects/{projectId}/rooms/{id}/update:
+    put:
+      tags: [rooms]
+      summary: Update room
+      operationId: updateRoom
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/RoomInputRequest"
+                - type: object
+                  properties:
+                    plan_media_path:
+                      type: string
+                      nullable: true
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: JSON string of RoomInputRequest
+                planFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Updated room
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoomResponse"
+
+  /api/projects/{projectId}/rooms/{id}/delete:
+    delete:
+      tags: [rooms]
+      summary: Delete room
+      operationId: deleteRoom
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Room deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /api/projects/{projectId}/floors:
+    get:
+      tags: [floors]
+      summary: Fetch floors by project
+      operationId: fetchFloors
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Floor list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FloorResponse"
+
+  /api/projects/{projectId}/floors/create:
+    post:
+      tags: [floors]
+      summary: Create floor
+      operationId: createFloor
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFloorRequest"
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: JSON string of CreateFloorRequest
+                planFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Created floor
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FloorResponse"
+
+  /api/projects/{projectId}/devices:
+    get:
+      tags: [devices]
+      summary: Fetch devices by project
+      operationId: fetchDevices
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Device list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceResponse"
+
+  /api/projects/{projectId}/devices/create:
+    post:
+      tags: [devices]
+      summary: Create device
+      operationId: createDevice
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceInputRequest"
+      responses:
+        "200":
+          description: Created device
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /api/projects/{projectId}/devices/{id}:
+    get:
+      tags: [devices]
+      summary: Fetch device by id
+      operationId: fetchDevice
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Device
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /api/projects/{projectId}/devices/{id}/update:
+    put:
+      tags: [devices]
+      summary: Update device
+      operationId: updateDevice
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceInputRequest"
+      responses:
+        "200":
+          description: Updated device
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceResponse"
+
+  /api/projects/{projectId}/devices/{id}/delete:
+    delete:
+      tags: [devices]
+      summary: Delete device
+      operationId: deleteDevice
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Device deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /api/device-positions:
+    get:
+      tags: [device-positions]
+      summary: Fetch device positions
+      operationId: fetchDevicePositions
+      responses:
+        "200":
+          description: Device positions list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DevicePositionResponse"
+
+  /api/device-positions/create:
+    post:
+      tags: [device-positions]
+      summary: Create device position (admin only)
+      operationId: createDevicePosition
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevicePositionInputRequest"
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: JSON string of DevicePositionInputRequest
+                iconFile:
+                  type: string
+                  format: binary
+                disabledIconFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Created position
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DevicePositionResponse"
+        "403":
+          description: Admin role required
+
+  /api/device-positions/{id}/update:
+    put:
+      tags: [device-positions]
+      summary: Update device position (admin only)
+      operationId: updateDevicePosition
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevicePositionInputRequest"
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: string
+                  description: JSON string of DevicePositionInputRequest
+                iconFile:
+                  type: string
+                  format: binary
+                disabledIconFile:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: Updated position
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DevicePositionResponse"
+        "403":
+          description: Admin role required
+
+  /api/device-positions/{id}/delete:
+    delete:
+      tags: [device-positions]
+      summary: Delete device position (admin only)
+      operationId: deleteDevicePosition
+      parameters:
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Position deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "403":
+          description: Admin role required
+
+  /api/projects/{projectId}/device_scenarios:
+    get:
+      tags: [device-scenarios]
+      summary: Fetch device scenarios by project
+      operationId: fetchDeviceScenarios
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Scenarios list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DeviceScenarioResponse"
+
+  /api/projects/{projectId}/device_scenarios/{id}:
+    get:
+      tags: [device-scenarios]
+      summary: Fetch device scenario by id
+      operationId: fetchDeviceScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Scenario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceScenarioResponse"
+        "404":
+          description: Scenario not found
+
+  /api/projects/{projectId}/device_scenarios/create:
+    post:
+      tags: [device-scenarios]
+      summary: Create device scenario
+      operationId: createDeviceScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceScenarioInputRequest"
+      responses:
+        "200":
+          description: Created scenario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceScenarioResponse"
+
+  /api/projects/{projectId}/device_scenarios/{id}/update:
+    put:
+      tags: [device-scenarios]
+      summary: Update device scenario
+      operationId: updateDeviceScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeviceScenarioInputRequest"
+      responses:
+        "200":
+          description: Updated scenario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeviceScenarioResponse"
+        "403":
+          description: Forbidden
+
+  /api/projects/{projectId}/device_scenarios/{id}/delete:
+    delete:
+      tags: [device-scenarios]
+      summary: Delete device scenario
+      operationId: deleteDeviceScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Scenario deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "403":
+          description: Forbidden
+
+  /api/projects/{projectId}/device_scenarios/{id}/run:
+    post:
+      tags: [device-scenarios]
+      summary: Run device scenario
+      operationId: runDeviceScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: Triggered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StatusResponse"
+        "404":
+          description: Scenario not found
+
+  /api/projects/{projectId}/inout_scenarios:
+    get:
+      tags: [inout-scenarios]
+      summary: Fetch in/out scenarios by project
+      operationId: fetchInOutScenarios
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: In/out scenarios list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InOutScenarioResponse"
+
+  /api/projects/{projectId}/inout_scenarios/create:
+    post:
+      tags: [inout-scenarios]
+      summary: Create in/out scenario
+      operationId: createInOutScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InOutScenarioInputRequest"
+      responses:
+        "200":
+          description: Created in/out scenario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InOutScenarioResponse"
+
+  /api/projects/{projectId}/inout_scenarios/{id}/update:
+    put:
+      tags: [inout-scenarios]
+      summary: Update in/out scenario
+      operationId: updateInOutScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InOutScenarioInputRequest"
+      responses:
+        "200":
+          description: Updated in/out scenario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InOutScenarioResponse"
+        "403":
+          description: Forbidden
+
+  /api/projects/{projectId}/inout_scenarios/{id}/delete:
+    delete:
+      tags: [inout-scenarios]
+      summary: Delete in/out scenario
+      operationId: deleteInOutScenario
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+        - $ref: "#/components/parameters/IdParam"
+      responses:
+        "200":
+          description: In/out scenario deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "403":
+          description: Forbidden
+
+  /api/yandex-auth/token:
+    post:
+      tags: [yandex-auth]
+      summary: Save Yandex auth by code
+      operationId: yandexAuthByCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              required: [code]
+      responses:
+        "200":
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Success
+
+  /api/yandex-auth/revoke:
+    post:
+      tags: [yandex-auth]
+      summary: Revoke Yandex auth token
+      operationId: yandexRevokeToken
+      responses:
+        "200":
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Success
+
+  /api/projects/{projectId}/yandex-devices/update:
+    post:
+      tags: [yandex-devices]
+      summary: Sync Yandex devices into project
+      operationId: yandexUpdateDevices
+      parameters:
+        - $ref: "#/components/parameters/ProjectIdParam"
+      responses:
+        "200":
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Success
+
+  /yandex/v1.0:
+    head:
+      tags: [yandex-dialogs]
+      summary: Yandex dialogs check endpoint
+      operationId: yandexDialogsCheck
+      responses:
+        "200":
+          description: OK
+
+  /yandex/v1.0/user/devices:
+    get:
+      tags: [yandex-dialogs]
+      summary: Yandex list devices
+      operationId: yandexDialogsFetchDevices
+      responses:
+        "200":
+          description: Device list envelope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/YandexDevicesEnvelopeResponse"
+
+  /yandex/v1.0/user/devices/query:
+    post:
+      tags: [yandex-dialogs]
+      summary: Yandex query device states
+      operationId: yandexDialogsFetchDeviceState
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DevicesStateInputRequest"
+      responses:
+        "200":
+          description: Device states envelope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/YandexDevicesStateEnvelopeResponse"
+
+  /yandex/v1.0/user/devices/action:
+    post:
+      tags: [yandex-dialogs]
+      summary: Yandex action on devices
+      operationId: yandexDialogsActionDevices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/YandexDevicesActionRequestEnvelope"
+      responses:
+        "200":
+          description: Action result envelope
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/YandexDevicesActionEnvelopeResponse"
+
+  /email_verification/send_code:
+    post:
+      tags: [email-verification]
+      summary: Send verification code to email
+      operationId: sendVerificationCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendCodeRequest"
+      responses:
+        "200":
+          description: Code sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+        "429":
+          description: Rate limited
+
+  /email_verification/confirm_code:
+    post:
+      tags: [email-verification]
+      summary: Confirm verification code
+      operationId: confirmVerificationCode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmCodeRequest"
+      responses:
+        "200":
+          description: Temporary token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tempToken:
+                    type: string
+                required: [tempToken]
+        "400":
+          description: Invalid or expired code
+
+  /ws:
+    get:
+      tags: [websocket]
+      summary: WebSocket upgrade endpoint
+      description: |
+        Endpoint upgrades HTTP to WebSocket. Token is expected in query parameter `authToken`.
+      operationId: websocketUpgrade
+      security:
+        - wsAuthQuery: []
+      parameters:
+        - in: query
+          name: authToken
+          required: true
+          schema:
+            type: string
+      responses:
+        "101":
+          description: Switching Protocols
+        "401":
+          description: Invalid or expired token
+        "403":
+          description: Missing auth token
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    wsAuthQuery:
+      type: apiKey
+      in: query
+      name: authToken
+
+  parameters:
+    ProjectIdParam:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int32
+    IdParam:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int32
+
+  schemas:
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    StatusResponse:
+      type: object
+      properties:
+        status:
+          type: string
+      required: [status]
+
+    LoginRequest:
+      type: object
+      properties:
+        username: { type: string }
+        password: { type: string }
+      required: [username, password]
+
+    LoginDeviceRequest:
+      type: object
+      properties:
+        deviceId:
+          type: integer
+          format: int32
+      required: [deviceId]
+
+    RefreshTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required: [refreshToken]
+
+    RevokeTokenRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+      required: [refreshToken]
+
+    TokenPairResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+          nullable: true
+      required: [token]
+
+    RefreshTokenResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        refreshToken:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_in:
+          type: integer
+        token_type:
+          type: string
+
+    OAuthTokenResponse:
+      type: object
+      properties:
+        access_token: { type: string }
+        refresh_token: { type: string }
+        expires_in: { type: integer }
+        token_type: { type: string }
+
+    CreateUserRequest:
+      type: object
+      properties:
+        name: { type: string }
+        type: { type: string }
+        username: { type: string }
+        password: { type: string }
+        email:
+          type: string
+          nullable: true
+      required: [name, type, username, password, email]
+
+    UserResponse:
+      type: object
+      properties:
+        name: { type: string }
+        type: { type: string }
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        username: { type: string }
+        email:
+          type: string
+          nullable: true
+        projectsId:
+          type: array
+          items:
+            type: integer
+      required: [name, type, createdAt, updatedAt, username, email, projectsId]
+
+    CreateProjectRequest:
+      type: object
+      properties:
+        name: { type: string }
+      required: [name]
+
+    ProjectResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        createdAt:
+          type: string
+          format: date-time
+        hasYandexAuth: { type: boolean }
+      required: [id, name, createdAt, hasYandexAuth]
+
+    RoomInputRequest:
+      type: object
+      properties:
+        name: { type: string }
+        floorId: { type: integer }
+      required: [name, floorId]
+
+    RoomResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        floorId: { type: integer }
+        planMediaPath:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, floorId, planMediaPath, createdAt, updatedAt]
+
+    CreateFloorRequest:
+      type: object
+      properties:
+        name: { type: string }
+      required: [name]
+
+    FloorResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        projectId: { type: integer }
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        planMediaPath:
+          type: string
+          nullable: true
+      required: [id, name, projectId, createdAt, updatedAt, planMediaPath]
+
+    DeviceInputRequest:
+      type: object
+      properties:
+        type: { type: string }
+        providerType: { type: string }
+        providerDeviceId:
+          type: string
+          nullable: true
+        inputId:
+          type: integer
+          nullable: true
+        outputId:
+          type: integer
+          nullable: true
+        isHidden:
+          type: boolean
+          nullable: true
+        name: { type: string }
+        capabilities:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        properties:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        roomId:
+          type: integer
+          nullable: true
+        floorId:
+          type: integer
+          nullable: true
+        customData:
+          type: object
+          nullable: true
+          additionalProperties: true
+      required:
+        - type
+        - providerType
+        - providerDeviceId
+        - inputId
+        - outputId
+        - isHidden
+        - name
+        - capabilities
+        - properties
+        - roomId
+        - floorId
+        - customData
+
+    DeviceResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        providerType: { type: string }
+        providerDeviceId:
+          type: string
+          nullable: true
+        type: { type: string }
+        inputId:
+          type: integer
+          nullable: true
+        outputId:
+          type: integer
+          nullable: true
+        name: { type: string }
+        isHidden: { type: boolean }
+        capabilities:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        properties:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        roomId:
+          type: integer
+          nullable: true
+        floorId:
+          type: integer
+          nullable: true
+        projectId:
+          type: integer
+        customData:
+          type: object
+          nullable: true
+          additionalProperties: true
+        lastHeartbeat:
+          type: string
+          format: date-time
+        status:
+          type: string
+      required:
+        - id
+        - providerType
+        - providerDeviceId
+        - type
+        - inputId
+        - outputId
+        - name
+        - isHidden
+        - capabilities
+        - properties
+        - createdAt
+        - updatedAt
+        - roomId
+        - floorId
+        - projectId
+        - customData
+        - lastHeartbeat
+        - status
+
+    DevicePositionInputRequest:
+      type: object
+      properties:
+        x: { type: number }
+        y: { type: number }
+        angle: { type: number }
+        deviceId: { type: integer }
+      required: [x, y, angle, deviceId]
+
+    DevicePositionResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        x: { type: number }
+        y: { type: number }
+        angle: { type: number }
+        iconMediaPath:
+          type: string
+          nullable: true
+        disabledIconMediaPath:
+          type: string
+          nullable: true
+        deviceId: { type: integer }
+      required:
+        [id, x, y, angle, iconMediaPath, disabledIconMediaPath, deviceId]
+
+    DeviceActionRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [changeDeviceState]
+            deviceId:
+              type: integer
+            state:
+              type: object
+              additionalProperties: true
+          required: [type, deviceId, state]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [delay]
+            seconds:
+              type: integer
+          required: [type, seconds]
+      discriminator:
+        propertyName: type
+
+    DeviceConditionRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [logic]
+            logic:
+              type: string
+            conditions:
+              type: array
+              items:
+                $ref: "#/components/schemas/DeviceConditionRequest"
+          required: [type, logic, conditions]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [deviceState]
+            deviceId:
+              type: integer
+            state:
+              type: object
+              additionalProperties: true
+          required: [type, deviceId, state]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [deviceStateValue]
+            deviceId:
+              type: integer
+            state:
+              type: object
+              additionalProperties: true
+            operator:
+              type: string
+          required: [type, deviceId, state, operator]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [inputState]
+            inputId:
+              type: integer
+            state:
+              type: boolean
+              nullable: true
+          required: [type, inputId, state]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [deviceEvent]
+            deviceId:
+              type: integer
+            event:
+              type: object
+              additionalProperties: true
+          required: [type, deviceId, event]
+      discriminator:
+        propertyName: type
+
+    DeviceScenarioInputRequest:
+      type: object
+      properties:
+        name: { type: string }
+        condition:
+          $ref: "#/components/schemas/DeviceConditionRequest"
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceActionRequest"
+      required: [name, condition, actions]
+
+    DeviceScenarioResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        condition:
+          type: object
+          additionalProperties: true
+        actions:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, condition, actions, createdAt, updatedAt]
+
+    InOutActionRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [changeDevice]
+            deviceId:
+              type: string
+            state:
+              type: boolean
+              nullable: true
+          required: [type, deviceId, state]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [delay]
+            seconds:
+              type: integer
+          required: [type, seconds]
+      discriminator:
+        propertyName: type
+
+    InOutConditionRequest:
+      oneOf:
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [logic]
+            logic:
+              type: string
+            conditions:
+              type: array
+              items:
+                $ref: "#/components/schemas/InOutConditionRequest"
+          required: [type, logic, conditions]
+        - type: object
+          properties:
+            type:
+              type: string
+              enum: [state]
+            deviceId:
+              type: string
+            state:
+              type: boolean
+              nullable: true
+          required: [type, deviceId, state]
+      discriminator:
+        propertyName: type
+
+    InOutScenarioInputRequest:
+      type: object
+      properties:
+        name: { type: string }
+        condition:
+          $ref: "#/components/schemas/InOutConditionRequest"
+        actions:
+          type: array
+          items:
+            $ref: "#/components/schemas/InOutActionRequest"
+      required: [name, condition, actions]
+
+    InOutScenarioResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        condition:
+          type: object
+          additionalProperties: true
+        actions:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required: [id, name, condition, actions, createdAt, updatedAt]
+
+    SendCodeRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required: [email]
+
+    ConfirmCodeRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        code:
+          type: string
+      required: [email, code]
+
+    DeviceStatusInfo:
+      type: object
+      properties:
+        reportable:
+          type: boolean
+      required: [reportable]
+
+    YandexDeviceResponse:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        statusInfo:
+          $ref: "#/components/schemas/DeviceStatusInfo"
+        description:
+          type: string
+          nullable: true
+        room:
+          type: string
+          nullable: true
+        type:
+          type: string
+        customData:
+          type: object
+          nullable: true
+          additionalProperties: true
+        capabilities:
+          type: array
+          nullable: true
+          items:
+            type: object
+            additionalProperties: true
+        properties:
+          type: array
+          nullable: true
+          items:
+            type: object
+            additionalProperties: true
+        deviceInfo:
+          type: object
+          nullable: true
+          additionalProperties: true
+      required:
+        [
+          id,
+          name,
+          statusInfo,
+          description,
+          room,
+          type,
+          customData,
+          capabilities,
+          properties,
+          deviceInfo,
+        ]
+
+    DevicesStateInputRequest:
+      type: object
+      properties:
+        devices:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeviceStateInputRequest"
+      required: [devices]
+
+    DeviceStateInputRequest:
+      type: object
+      properties:
+        id: { type: string }
+        customData:
+          type: object
+          nullable: true
+          additionalProperties: true
+      required: [id, customData]
+
+    ActionDeviceRequest:
+      type: object
+      properties:
+        id: { type: string }
+        customData:
+          type: object
+          nullable: true
+          additionalProperties: true
+        capabilities:
+          type: array
+          nullable: true
+          items:
+            type: object
+            additionalProperties: true
+      required: [id, customData, capabilities]
+
+    ActionResultResponse:
+      type: object
+      properties:
+        status:
+          type: string
+        errorCode:
+          type: string
+          nullable: true
+      required: [status]
+
+    ActionDeviceResultResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        actionResult:
+          $ref: "#/components/schemas/ActionResultResponse"
+      required: [id, actionResult]
+
+    YandexDevicesEnvelopeResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        payload:
+          type: object
+          properties:
+            user_id:
+              type: string
+            devices:
+              type: array
+              items:
+                $ref: "#/components/schemas/YandexDeviceResponse"
+          required: [user_id, devices]
+      required: [request_id, payload]
+
+    YandexDevicesStateEnvelopeResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        payload:
+          type: object
+          properties:
+            user_id:
+              type: string
+            devices:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+          required: [user_id, devices]
+      required: [request_id, payload]
+
+    YandexDevicesActionRequestEnvelope:
+      type: object
+      properties:
+        payload:
+          type: object
+          properties:
+            devices:
+              type: array
+              items:
+                $ref: "#/components/schemas/ActionDeviceRequest"
+          required: [devices]
+      required: [payload]
+
+    YandexDevicesActionEnvelopeResponse:
+      type: object
+      properties:
+        request_id:
+          type: string
+        payload:
+          type: object
+          properties:
+            user_id:
+              type: string
+            devices:
+              type: array
+              items:
+                $ref: "#/components/schemas/ActionDeviceResultResponse"
+          required: [user_id, devices]
+      required: [request_id, payload]

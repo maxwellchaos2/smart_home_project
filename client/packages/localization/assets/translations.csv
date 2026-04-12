@@ -1,0 +1,105 @@
+keys,ru
+error,Ошибка
+notValidEmail,Недействительный адрес электронной почты
+notValidFieldRequired,Обязательное поле
+yes,Да
+cancel,Отменить
+unknownError,Неизвестна ошибка
+search,Поиск
+all,Все
+newProduct,Новинка
+promotionsAndDiscounts,Акции и скидки
+popular,Популярное
+pastOrders,Прошлые заказы
+order,Заказ
+orderDate,Дата заказа
+quantity,Количество
+cost,Стоимость
+news,Новости
+main,Главная
+catalog,Каталог
+cart,Корзина
+favorites,Избранное
+account,Аккаунт
+yourOrder,Ваш заказ
+products,Товары
+quantityPositions,Кол-во позиций
+totalCost,Общая стоимость
+reorder,Повторить заказ
+publicationDate,Дата публикации
+filters,Фильтры
+price,Цена
+from,От
+to,До
+weight,Вес
+applyFilters,Применить фильтры
+article,Артикул
+description,Описание
+showAll,показать все
+showLess,показать меньше
+composition,Состав
+storagePeriodAndConditions,Срок и условия хранения
+manufacturer,Производитель
+addToCart,В корзину
+inStock,В наличии
+exitTitle,Вы действительно хотите выйти из аккаунта
+exit,Выход
+minCostOrder,Минимальная стоимость заказа
+toPay,К оплате
+checkout,Оформить заказ
+checkoutTitle,Оформление заказа
+deliveryAddress,Адрес доставки
+selectDeliveryAddress,Выберите адрес доставки
+phoneNumber,Номер телефона
+orderNote,Примечание к заказу
+yourComment,Ваш комментарий
+specialDelivery,Срочная доставка
+specialDeliveryInfo,(Cогласовывается с менеджером компании)
+confirmOrder,Подтвердить заказ
+orderSuccessTitle,Ваш заказ успешно оформлен
+orderSuccessDescription,Ожидайте уведомления об оплате
+mainScreen,Главная страница
+personalDetails,Персональная информация
+myOrders,Мои заказы
+notifications,Уведомления
+customerSupport,Служба поддержки
+exitOfAccount,Выйти из акаунта
+companyName,Название компании
+paymentMethod,Способ оплаты
+bin,БИН
+iik,ИИК
+binFull,Банковский идентификационный номер
+iikFull,Индивидуальный идентификационный код
+bik,БИК
+bikFull,Банковский идентификационный код
+writeOfDeliveryAddress,Напишите адрес доставки
+deliverySchedule,Расписание доставки
+writeOfDeliverySchedule,Напишите расписание доставки
+addNewAddress,Добавить новый адрес
+invoice,Счёт на оплату
+attachPayment,Прикрепить платеж
+status,Статус
+cancelOrder,Отменить заказ
+attachPaymentTitle,Прикрепить платежное поручение
+selectPDF,Выберите и отправте файл в формате PDF
+selectFile,Выберите файл
+send,Отправить
+currentOrders,Текущие
+doneOrders,Выполненные
+udeliveredOrders,Недоставленные
+empty,Пусто
+name,Имя
+contactData,Контактные данные
+lastName,Фамилия
+email,Электронная почта
+selectReceiptMethod,Выберите способ получения
+delivery,Доставка
+expressDelivery,Экспресс доставка
+pickup,Самовывоз
+writeOfDeliveryTime,Введите время доставки
+yourBonuses,Ваши бонусы
+useBonuses,Использовать бонусы
+total,Всего
+city,Город
+street,Улица
+apartmentNumber,Номер дома

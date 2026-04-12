@@ -1,0 +1,31 @@
+name: inout_scenarios
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  common:
+    path: ../common
+
+  devices:
+    path: ../devices
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any
+  auto_route_generator: any

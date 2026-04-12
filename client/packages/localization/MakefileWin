@@ -1,0 +1,8 @@
+all: arb_generate run_gen
+
+arb_generate: 
+	@rd /s /q "arb"
+	@dart run arb_generator
+run_gen: 
+	@rd /s /q "lib/src/l10n"
+	@fvm flutter gen-l10n

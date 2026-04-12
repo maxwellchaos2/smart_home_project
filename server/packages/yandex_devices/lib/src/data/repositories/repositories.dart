@@ -1,0 +1,1 @@
+export 'yandex_devices_repository.dart';

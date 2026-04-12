@@ -1,0 +1,21 @@
+name: themes
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.22.1"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  assets:
+    path: ../assets
+
+  common:
+    path: ../common
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any

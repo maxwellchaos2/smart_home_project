@@ -1,0 +1,36 @@
+name: rooms
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  freezed_annotation: any
+  json_annotation: any
+
+  shelf: any
+  shelf_router: any
+
+  common:
+    path: ../common
+
+  database:
+    path: ../database
+
+  users:
+    path: ../users
+
+  media:
+    path: ../media
+
+  web_socket_core:
+    path: ../web_socket_core
+
+  events:
+    path: ../events
+
+dev_dependencies:
+  lints: ^5.0.0
+  build_runner: any
+  json_serializable: any
+  freezed: any

@@ -1,0 +1,25 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "server",
+            "request": "launch",
+            "type": "dart",
+            "program": "bin/server.dart",
+            "toolArgs": [
+                "--define=DB_HOST=localhost",
+                "--define=POSTGRES_PASSWORD=postgres",
+                "--define=DEBUG=true",
+                "--define=PORT=8081",
+                "--define=YANDEX_CLIENT_SECRET=yandex-Yis4C15sKe",
+                "--define=SMTP_HOST=smtp.yandex.ru",
+                "--define=SMTP_PORT=465",
+                "--define=SMTP_USERNAME=shy.umniy888@yandex.com",
+                "--define=SMTP_PASSWORD=kmtvbfzusvaawhmr"
+            ]
+        }
+    ]
+}

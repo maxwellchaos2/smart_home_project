@@ -1,0 +1,194 @@
+services:
+  scenarios_service:
+    restart: always
+    image: registry.smart-home-pnz.ru/scenarios_service:latest
+    depends_on:
+      - sync_service
+    environment:
+      - ENV=${ENV}
+      - SYNC_SERVICE_URL=${SYNC_SERVICE_URL}
+    networks:
+      - app-network
+
+  hikvision_controller_service:
+    restart: always
+    image: registry.smart-home-pnz.ru/hikvision_controller_service:latest
+    depends_on:
+      - sync_service
+    environment:
+      - ENV=${ENV}
+      - SYNC_SERVICE_URL=${SYNC_SERVICE_URL}
+      - HIKVISION_IP=192.168.1.88
+      - HIKVISION_USER=admin
+      - HIKVISION_PASSWORD=565758Ss
+    networks:
+      - app-network
+
+  logo_controller_service:
+    image: registry.smart-home-pnz.ru/logo_controller_service:latest
+    restart: always
+    depends_on:
+      - sync_service
+    environment:
+      - ENV=${ENV}
+      - SYNC_SERVICE_URL=${SYNC_SERVICE_URL}
+      - LOGO_CONTROLLER_IP=${LOGO_CONTROLLER_IP}
+    networks:
+      - app-network
+
+  # hikvision_controller_service:
+  #   image: hikvision_controller_service:latest
+  #   restart: always
+  #   depends_on:
+  #     - sync_service
+  #   environment:
+  #     - ENV=${ENV}
+  #     - SYNC_SERVICE_URL=${SYNC_SERVICE_URL}
+  #     - HIKVISION_IP=${HIKVISION_IP}
+  #     - HIKVISION_USER=${HIKVISION_USER}
+  #     - HIKVISION_PASSWORD=${HIKVISION_PASSWORD}
+  #   networks:
+  #     - app-network
+
+  zigbee_service:
+    image: registry.smart-home-pnz.ru/zigbee_service:latest
+    restart: always
+    environment:
+      - ENV=${ENV}
+      - SYNC_SERVICE_URL=${SYNC_SERVICE_URL}
+      - ZIGBEE_BROKER=${ZIGBEE_BROKER}
+      - ZIGBEE_PORT=${ZIGBEE_PORT}
+    networks:
+      - app-network
+
+  sync_service:
+    image: registry.smart-home-pnz.ru/sync_service:latest
+    restart: always
+    ports:
+      - "8082:8080"
+    privileged: true
+    volumes:
+      - /var/run/dbus:/var/run/dbus
+      - ~/smart_home/config_data:/app/config_data
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+    environment:
+      - ENV=${ENV}
+      - REMOTE_SERVER_URL=${REMOTE_SERVER_URL}
+    networks:
+      - app-network
+    # Критически важные настройки для Bluetooth
+    # network_mode: host  # Добавляем host network для полного доступа к Bluetooth
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    container_name: mosquitto
+    restart: always
+    volumes:
+      - ~/smart_home/mosquitto/config:/mosquitto/config
+      - ~/smart_home/mosquitto/data:/mosquitto/data
+      # - ./mosquitto/log:/mosquitto/log
+    networks:
+      - app-network
+
+  zigbee2mqtt:
+    image: koenkk/zigbee2mqtt
+    container_name: zigbee2mqtt
+    restart: always
+    depends_on:
+      - mqtt
+    environment:
+      - ZIGBEE2MQTT_CONFIG_SERIAL_ADAPTER=${ZIGBEE_ADAPTER}
+      - ZIGBEE2MQTT_CONFIG_SERIAL_PORT=${ZIGBEE_ADAPTER_PORT}
+      - ZIGBEE2MQTT_CONFIG_MQTT_SERVER=mqtt://mqtt:1883
+      - ZIGBEE2MQTT_CONFIG_MQTT_BASE_TOPIC=zigbee2mqtt
+      - ZIGBEE2MQTT_CONFIG_FRONTEND_PORT=8080
+      - ZIGBEE2MQTT_CONFIG_SERIAL_BAUDRATE=115200
+      - ZIGBEE2MQTT_CONFIG_FRONTEND_ENABLED=true
+    ports:
+      - "8080:8080" # веб-интерфейс Zigbee2MQTT
+    volumes:
+      - ~/smart_home/zigbee2mqtt/data:/app/data
+    devices:
+      - "${ZIGBEE_ADAPTER_PORT}:${ZIGBEE_ADAPTER_PORT}"
+
+    networks:
+      - app-network
+
+  voice_assistant_service:
+    restart: always
+    image: registry.smart-home-pnz.ru/voice_assistant_service:latest
+    depends_on:
+      - sync_service
+      - rhvoice-server
+      - vosk-server
+    devices:
+      - /dev/snd:/dev/snd
+    volumes:
+      # Пробрасываем модули ядра для AC200
+      - /lib/modules:/lib/modules:ro
+      - /sys:/sys:ro
+      # Пробрасываем ALSA состояние с хоста в контейнер
+      - /var/lib/alsa/asound.state:/var/lib/alsa/asound.state:rw
+      # - /etc/asound.conf:/etc/asound.conf:ro
+      - /usr/share/alsa/alsa.conf:/usr/share/alsa/alsa.conf:ro
+      - /etc/asound.conf/asound_4mic.conf:/etc/asound.conf:ro
+    environment:
+      - ENV=${ENV}
+      - SYNC_SERVICE_URL=${SYNC_SERVICE_URL}
+      - VOSK_URL=${VOSK_URL}
+      - RHVOICE_URL=${RHVOICE_URL}
+      - AUDIO_ID=${AUDIO_ID}
+    networks:
+      - app-network
+    privileged: true
+    user: root
+    group_add:
+      - audio
+    cap_add:
+      - SYS_ADMIN
+
+  rhvoice-server:
+    image: aculeasis/rhvoice-rest
+    container_name: rhvoice-rest
+    ports:
+      - "2800:8080"
+    restart: always
+
+    networks:
+      - app-network
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/voices"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  vosk-server:
+    image: registry.smart-home-pnz.ru/vosk-ru-arm64-small:latest
+    ports:
+      - "2700:2700"
+    restart: always
+
+    networks:
+      - app-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 2700 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s # Vosk долго стартует
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json:ro
+    command: --cleanup --interval 300
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,1 @@
+export 'rooms_database_client.dart';

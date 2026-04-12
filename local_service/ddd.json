@@ -1,0 +1,40 @@
+{
+    "state": {
+        "I1": {
+            "desc": "I-bit-1-1",
+            "value": [
+                0
+            ]
+        },
+        "Q1": {
+            "desc": "Q-bit-1-1",
+            "value": [
+                0
+            ]
+        },
+        "NI1": {
+            "desc": "V-bit-1.0-1",
+            "value": [
+                0
+            ]
+        },
+        "NQ1": {
+            "desc": "V-bit-1.1-1",
+            "value": [
+                0
+            ]
+        },
+        "NI2": {
+            "desc": "V-bit-2.0-1",
+            "value": [
+                0
+            ]
+        },
+        "NQ2": {
+            "desc": "V-bit-2.1-1",
+            "value": [
+                0
+            ]
+        }
+    }
+}

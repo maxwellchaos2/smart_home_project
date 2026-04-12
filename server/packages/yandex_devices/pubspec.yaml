@@ -1,0 +1,39 @@
+name: yandex_devices
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  freezed_annotation: any
+  json_annotation: any
+
+  shelf: any
+  shelf_router: any
+
+  dart_jsonwebtoken: ^2.0.0
+  uuid: ^4.5.1
+
+  common:
+    path: ../common
+
+  users:
+    path: ../users
+
+  refresh_token:
+    path: ../refresh_token
+  dio: ^5.8.0+1
+  retrofit: ^4.4.2
+
+  devices:
+    path: ../devices
+
+  yandex_auth:
+    path: ../yandex_auth
+
+dev_dependencies:
+  lints: ^5.0.0
+  build_runner: any
+  json_serializable: any
+  freezed: any
+  retrofit_generator: ^9.1.9

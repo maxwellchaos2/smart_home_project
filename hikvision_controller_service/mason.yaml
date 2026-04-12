@@ -1,0 +1,11 @@
+bricks:
+  create_feature:
+    path: /Users/vzotov/MasonProjects/flutter_clean_architecture/bricks/create_feature
+  new_entity:
+    path: /Users/vzotov/MasonProjects/flutter_clean_architecture/bricks/new_entity
+  new_bloc:
+    path: /Users/vzotov/MasonProjects/flutter_clean_architecture/bricks/new_bloc
+  new_widget:
+    path: /Users/vzotov/MasonProjects/flutter_clean_architecture/bricks/new_widget
+  new_screen:
+    path: /Users/vzotov/MasonProjects/flutter_clean_architecture/bricks/new_screen

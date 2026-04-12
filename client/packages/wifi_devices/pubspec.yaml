@@ -1,0 +1,47 @@
+name: wifi_devices
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  wifi_iot: ^0.3.19+2
+  wifi_scan: ^0.4.1+2
+
+  common:
+    path: ../common
+
+  events:
+    path: ../events
+
+  devices:
+    path: ../devices
+
+  auth_token:
+    path: ../auth_token
+
+  flutter_blue_plus: ^2.0.0
+  network_info_plus: ^7.0.0
+  permission_handler: ^12.0.1
+
+dependency_overrides:
+  rxdart: ^0.27.7
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: any
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any
+  auto_route_generator: any

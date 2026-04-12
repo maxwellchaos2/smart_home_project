@@ -1,0 +1,8 @@
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://mqtt
+serial:
+  baudrate: 115200
+frontend:
+  enabled: true
+  port: 8080

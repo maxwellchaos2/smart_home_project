@@ -1,0 +1,1 @@
+export 'localization_scope.dart';

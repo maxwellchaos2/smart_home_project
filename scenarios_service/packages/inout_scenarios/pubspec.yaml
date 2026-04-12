@@ -1,0 +1,26 @@
+name: inout_scenarios
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  common: any
+
+dependency_overrides:
+  common:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: common
+      ref: v1.3.0
+
+dev_dependencies:
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any

@@ -1,0 +1,82 @@
+name: server
+description: A server app using the shelf package and Docker.
+version: 1.0.0
+
+publish_to: none
+
+environment:
+  sdk: ^3.5.3
+
+dependencies:
+  args: ^2.4.0
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+
+  postgres: ^3.4.5
+
+  common:
+    path: packages/common
+
+  database:
+    path: packages/database
+
+  devices:
+    path: packages/devices
+
+  rooms:
+    path: packages/rooms
+
+  auth_token:
+    path: packages/auth_token
+
+  refresh_token:
+    path: packages/refresh_token
+
+  users:
+    path: packages/users
+
+  projects:
+    path: packages/projects
+
+  events:
+    path: packages/events
+
+  web_socket_core:
+    path: packages/web_socket_core
+
+  floors:
+    path: packages/floors
+
+  inout_scenario:
+    path: packages/inout_scenario
+
+  device_scenario:
+    path: packages/device_scenario
+
+  yaml: ^3.1.3
+
+  oauth:
+    path: packages/oauth
+
+  yandex_auth:
+    path: packages/yandex_auth
+
+  yandex_dialogs:
+    path: packages/yandex_dialogs
+
+  yandex_devices:
+    path: packages/yandex_devices
+
+  device_positions:
+    path: packages/device_positions
+
+  smtp:
+    path: packages/smtp
+
+  email_verification:
+    path: packages/email_verification
+
+dev_dependencies:
+  http: ^1.1.0
+  lints: ^4.0.0
+  test: ^1.24.0

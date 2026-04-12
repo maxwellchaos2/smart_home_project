@@ -1,0 +1,54 @@
+name: voice_assistant_service
+description: A server app using the shelf package and Docker.
+version: 1.0.0
+publish_to: none
+
+# repository: https://github.com/my_org/my_repo
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  args: ^2.4.0
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+
+  devices: any
+  events: any
+  common: any
+
+  dio: ^5.8.0+1
+  synchronized: ^3.0.0
+  ffi: ^2.1.0
+
+  audio_capture:
+    path: packages/audio_capture
+
+  command_parser:
+    path: packages/command_parser
+
+dependency_overrides:
+  devices:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: devices
+      ref: v1.3.0
+
+  common:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: common
+      ref: v1.3.0
+
+  events:
+    git:
+      url: https://github.com/Zotov-Dev/smart_home-shared_packages.git
+      path: events
+      ref: v1.3.0
+
+dev_dependencies:
+  http: ^1.1.0
+  lints: ^4.0.0
+  test: ^1.24.0
+  build_runner: any
+  freezed: any

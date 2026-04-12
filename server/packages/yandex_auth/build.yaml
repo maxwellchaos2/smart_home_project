@@ -1,0 +1,26 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        options:
+          copy_with: false
+          equal: true
+          from_json: false
+          to_json: false
+          when:
+            when: false
+            when_or_null: false
+            maybe_when: false
+      json_serializable:
+        options:
+          explicit_to_json: true
+
+        generate_for:
+          - "**/models/**.dart"
+      auto_route_generator:
+        generate_for:
+          - "**/routes/**.dart"
+          - "**/screens/**.dart"
+      retrofit_generator:
+        generate_for:
+          - "**/clients/**.dart"

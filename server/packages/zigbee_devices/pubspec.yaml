@@ -1,0 +1,22 @@
+name: zigbee_devices
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+dependencies:
+  dio: any
+  retrofit: any
+  freezed_annotation: any
+  json_annotation: any
+
+  common:
+    path: ../common
+
+dev_dependencies:
+  flutter_lints: any
+  retrofit_generator: any
+  build_runner: any
+  json_serializable: any
+  freezed: any
+  auto_route_generator: any
