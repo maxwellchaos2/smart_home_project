@@ -1,6 +1,0 @@
-[submodule "server"]
-	path = server
-	url = https://github.com/Zotov-Dev/smart_home-server.git
-[submodule "client"]
-	path = client
-	url = https://github.com/Zotov-Dev/smart_home-client.git
