@@ -27,8 +27,9 @@ bash
 ssh <ваше_имя_пользователя>@<ваш_hostname>.local
 ```
 Например: 
-``` ssh pi@raspberrypi.local 
-
+``` 
+ssh pi@raspberrypi.local 
+```
 Пароль: тот, что вы указали в Imager.
 
 ### установка докера на Raspberry Pi
