@@ -11,7 +11,27 @@
 - На сборочной машине есть файл `.github_token` для `dart pub get` приватных зависимостей.
 
 ## 2. Установка Docker на Raspberry Pi
+### подключение к Raspberry Pi
+- Запустите Raspberry Pi Imager на вашем компьютере ([https://www.raspberrypi.com/software/](https://www.raspberrypi.com/software/)).
+- Выберите образ ОС: Нажмите "Выбрать ОС" (Choose OS) и выберите Raspberry Pi OS (other) → выберите полную или Lite версию.
+- Настройте параметры: 
+  - Включите SSH (Enable SSH): Поставьте галочку и выберите "Allow public-key authentication only" или "Use password authentication". Укажите пароль для пользователя pi.
+  - Задайте имя хоста (Set hostname): Придумайте имя для вашей Pi (по умолчанию raspberrypi).
+  - (Опционально) Укажите имя пользователя, пароль Wi-Fi и другие параметры.
+- Запишите образ: Выберите вашу SD-карту и нажмите "Записать" (Write).
+- Подключите Pi: Вставьте карту в Raspberry Pi и подключите её к компьютеру через правильный USB-порт (см. таблицу выше). Плата включится.
+- Подождите около 1-2 минут для первой загрузки.
+- Подключитесь по SSH: На компьютере откройте терминал (или PowerShell, или Putty) и выполните команду:
+```
+bash
+ssh <ваше_имя_пользователя>@<ваш_hostname>.local
+```
+Например: 
+``` ssh pi@raspberrypi.local 
 
+Пароль: тот, что вы указали в Imager.
+
+### установка докера на Raspberry Pi
 ```bash
 sudo apt update
 sudo apt upgrade -y
